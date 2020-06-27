@@ -35,6 +35,13 @@ g.add_edge_list(e_list)
     
 end = time.time()
 
+print("Time it takes to manually create a graph and add edges without using the graph generating functions:")
 print(end - start)
 
-graph_draw(g, vertex_text=g.vertex_index, output="test.pdf")
+#time it takes to draw graph
+start = time.time()
+graph_draw(g, vertex_text=g.vertex_index)
+end = time.time()
+print("Time it takes to draw a graph:")
+print(end - start)
+
