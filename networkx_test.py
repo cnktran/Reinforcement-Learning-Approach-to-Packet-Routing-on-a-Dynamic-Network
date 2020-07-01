@@ -12,7 +12,7 @@ from random import sample
 from random import randint
 import time
 
-num_nodes = 1000
+num_nodes = 10000
 num_edges = 2500
 min_weight = 1
 max_weight = 10
@@ -48,17 +48,17 @@ print("Time it takes to draw a graph:")
 print(end - start)
 
 #create a random graph using netowrkx built in functions measure time
-p = 0.005
+p = 0.01
 
 start = time.time()
-rand_g = nx.fast_gnp_random_graph(num_nodes, p, directed=True)
+rand_g = nx.fast_gnp_random_graph(num_nodes, p, directed=False)
 end = time.time()
 
 print("Time it takes to create a G(n, p) graph with fast_gnp_random_graph")
 print(end - start)
 
 start = time.time()
-rand_g = nx.gnp_random_graph(num_nodes, p, directed=True)
+rand_g = nx.gnp_random_graph(num_nodes, p, directed=False)
 end = time.time()
 
 print("Time it takes to create a G(n, p) graph with gnp_random_graph")

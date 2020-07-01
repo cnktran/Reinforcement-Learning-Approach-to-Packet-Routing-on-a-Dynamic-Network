@@ -4,6 +4,8 @@ Created on Thu Jun 25 21:53:06 2020
 
 @author: janes
 """
+import sys
+sys.path.append("C:\\Users\\janes\\AppData\\Local\\Packages\\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\\LocalState\\rootfs\\usr\\lib\\python3\\dist-packages")
 
 from graph_tool.all import *
 from itertools import combinations
@@ -45,3 +47,11 @@ end = time.time()
 print("Time it takes to draw a graph:")
 print(end - start)
 
+p = 0.1
+
+# use ER model
+start = time.time()
+er = random_graph(num_nodes, lambda: poisson((num_nodes-1) * p), directed=True, model="erdos")
+end = time.time()
+print("Time it takes to a G(n, p) graph:")
+print(end - start)
