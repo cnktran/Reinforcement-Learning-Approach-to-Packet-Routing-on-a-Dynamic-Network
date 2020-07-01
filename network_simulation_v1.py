@@ -12,14 +12,14 @@ import random
 
 #create graph g
 num_nodes = 15
-p = 0.2
-lam = p * (num_nodes - 1)/2
+p = 0.25
+lam = max(0, p * (num_nodes - 1)/2 - 1)
 min_weight = 1
 max_weight = 20
 sim_time = 10
 
 #setting up the initial state of the network
-g = random_graph(num_nodes, lambda: (poisson(lam), poisson(lam)), directed = True)
+g = random_graph(num_nodes, lambda: (1 + poisson(lam), 1 + poisson(lam)), directed = True)
 num_edges = g.get_edges().shape[0]
 randints = randint(min_weight, max_weight, size=num_edges)
 weight = g.new_edge_property("int", vals=randints)
