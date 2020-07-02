@@ -3,7 +3,7 @@ import Packet
 
 class Packets:
     def __init__(self, packetList, num_Packets):
-        self.packetList = None
+        self.packetList = packetList
         self.num_Packets = 0
 
     def fillPackets(self, listOfPackets):
