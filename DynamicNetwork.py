@@ -24,11 +24,11 @@ def randomGeneratePackets(self, num_packets):
     tempList = []
     for i in range(num_packets):
         # random node initialization
-        startNode = self.nodes(randint(0, len(self)))
-        endNode = self.nodes(randint(0, len(self)))
+        startNode = self.nodes(randint(0, len(self._network)))
+        endNode = self.nodes(randint(0, len(self._network)))
 
         while (startNode == endNode):
-            endNode = self.nodes(randint(0, len(self)))
+            endNode = self.nodes(randint(0, len(self._network)))
 
         # give weight 0 in the begining
         curPack = Packet(startNode, endNode, startNode, 0)
