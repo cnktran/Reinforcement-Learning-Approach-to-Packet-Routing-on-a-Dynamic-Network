@@ -4,10 +4,10 @@ import numpy as np
 
 class Packet:
     def __init__(self, startPos, endPos, curPos, weight):
-        self._startPos = None
-        self._endPos = None
-        self._curPos = None
-        self._weight = 0
+        self._startPos = startPos
+        self._endPos = endPos
+        self._curPos = curPos
+        self._weight = weight
 
     def get_startPos(self):
         print("getter method called")
