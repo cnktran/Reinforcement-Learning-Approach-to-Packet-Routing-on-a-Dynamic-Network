@@ -11,31 +11,27 @@ import matplotlib.pyplot as plt
 class Router:
     def __init__(self):
         pass
+
     #router using dijkstra
     def dijkstra_router(self, network):
         for pkt in network._packets:
             curr = pkt.get_curPos()
             dest = pkt.get_endPos()
             next_step = nx.dijkstra_path(network, curr, dest)[1] 
-            if self.is_capacity(network, next_step):
-                return curr
-            else:
+            if not self.is_capacity(network, next_step):
                 self.send_packet(network, pkt, next_step)
-                return next_step
-        
+
     #router using floyd-warshall
     def fw_router(self, network):
         preds, _ = nx.floyd_warshall_predecessor_and_distance(network)
         for pkt in network._packets:
             curr = pkt.get_curPos()
             dest = pkt.get_endPos()
+    
             next_step = nx.reconstruct_path(curr, dest, preds)[1]
-            if self.is_capacity(network, next_step):
-                return curr
-            else:
+            if not self.is_capacity(network, next_step):
                 self.send_packet(network, pkt, next_step)
-                return next_step
-        
+                
     #check if the node is at capacity
     def is_capacity(g, node):
         return len(g.nodes[node]['current_queue']) == g.nodes[node]['max_queue']
@@ -44,7 +40,7 @@ class Router:
     def send_packet(g, pkt, next_step):
         curr = pkt.get_curPos()
         g.nodes[curr]['current_queue'].pop(0)
-        g.nodes[next_step]['current_queue'].append(pkt)
+        g.nodes[next_step]['current_queue'].append(pkt.index())
         pkt.set_curPos(next_step)
         
 
