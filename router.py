@@ -38,13 +38,17 @@ class Router:
         
     #check if the node is at capacity
     def is_capacity(g, node):
-        return len(g.nodes[node]['current_queue']) == g.nodes[node]['max_queue']
+        return len(g.nodes[node]['current_queue'][g.nodes[node]['current_queue'] != np.repeat(-1,  g.nodes[node]['max_queue'])] ) == np.repeat(-1, g.nodes[node]['max_queue'])
+        #return len(g.nodes[node]['current_queue']) == g.nodes[node]['max_queue']
     
     #send the packet the new node and update the current_queues
     def send_packet(g, pkt, next_step):
         curr = pkt.get_curPos()
         g.nodes[curr]['current_queue'].pop(0)
-        g.nodes[next_step]['current_queue'].append(pkt)
+        g.nodes[next_step]['current_queue'].append(pkt.index())      
+        #curr = pkt.get_curPos()
+        #g.nodes[curr]['current_queue'].pop(0)
+        #g.nodes[next_step]['current_queue'].append(pkt)
         pkt.set_curPos(next_step)
         
 
