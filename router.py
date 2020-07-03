@@ -11,29 +11,30 @@ import matplotlib.pyplot as plt
 class Router:
     def __init__(self):
         pass
-    
     #router using dijkstra
-    def dijkstra_router(self, network, pkt):
-        curr = pkt.get_curPos()
-        dest = pkt.get_endPos()
-        next_step = nx.dijkstra_path(network, curr, dest)[1] 
-        if self.is_capacity(network, next_step):
-            return curr
-        else:
-            self.send_packet(network, pkt, next_step)
-            return next_step
-            
+    def dijkstra_router(self, network):
+        for pkt in network._packets:
+            curr = pkt.get_curPos()
+            dest = pkt.get_endPos()
+            next_step = nx.dijkstra_path(network, curr, dest)[1] 
+            if self.is_capacity(network, next_step):
+                return curr
+            else:
+                self.send_packet(network, pkt, next_step)
+                return next_step
+        
     #router using floyd-warshall
-    def fw_router(self, network, pkt):
-        curr = pkt.get_curPos()
-        dest = pkt.get_endPos()
+    def fw_router(self, network):
         preds, _ = nx.floyd_warshall_predecessor_and_distance(network)
-        next_step = nx.reconstruct_path(curr, dest, preds)[1]
-        if self.is_capacity(network, next_step):
-            return curr
-        else:
-            self.send_packet(network, pkt, next_step)
-            return next_step
+        for pkt in network._packets:
+            curr = pkt.get_curPos()
+            dest = pkt.get_endPos()
+            next_step = nx.reconstruct_path(curr, dest, preds)[1]
+            if self.is_capacity(network, next_step):
+                return curr
+            else:
+                self.send_packet(network, pkt, next_step)
+                return next_step
         
     #check if the node is at capacity
     def is_capacity(g, node):
@@ -44,6 +45,8 @@ class Router:
         curr = pkt.get_curPos()
         g.nodes[curr]['current_queue'].pop(0)
         g.nodes[next_step]['current_queue'].append(pkt)
+        pkt.set_curPos(next_step)
+        
 
 # #test router functions
 # sample_g = nx.cycle_graph(5)
