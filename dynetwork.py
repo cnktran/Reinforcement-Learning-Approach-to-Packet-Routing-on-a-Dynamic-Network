@@ -5,12 +5,12 @@ import time
 import random
 import numpy as np
 
-node_count = 50
+node_count = 200
 edge_count = 5
 max_capacity = 5
-time_steps = 10
-edge_removal_min = 0
-edge_removal_max = 10
+time_steps = 50
+edge_removal_min = 10
+edge_removal_max = 50
 
 #Initialize a Network
 G = nx.barabasi_albert_graph(node_count, edge_count)
