@@ -19,10 +19,12 @@ class Router:
             curr = pkt.get_curPos()
             dest = pkt.get_endPos()
             next_step = nx.dijkstra_path(network, curr, dest)[1]
-            if self.is_capacity(network, next_step):
+
+            # if the next node is full
+            if (network.isCapacity(next_step)):
                 return curr
             else:
-                self.send_packet(network, pkt, next_step)
+                network.send_packet(pkt, next_step)
                 return next_step
 
     # router using floyd-warshall

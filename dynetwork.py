@@ -7,6 +7,7 @@ import numpy as np
 import Packet
 import Packets
 
+
 # Question: Can I directly use functions in packet if I import Packets which included Packet
 '''PERSON class import WALLET， WALLET import MONEY. 
 In PERSON class directly use MONEY function '''
@@ -33,7 +34,7 @@ class DynamicNetwork(object):
                 random.randint(0, len(self._network)))
 
             # if the node is full then assign to another
-            while(startNode['current_queue'].length() == startNode['max_capacity']):
+            while(startNode['p_queue'].length() > startNode['max_capacity']):
                 startNode = self._network.nodes(
                     random.randint(0, len(self._network)))
 
@@ -54,6 +55,18 @@ class DynamicNetwork(object):
         # Assign Packets Object to the network
         self._network._packets = packetsObj
 
+    # return a boolean if a given node is at capacity
+    def isCapacity(self, node):
+        return(node[p_queue] > node[max_capacity])
+
+    '''still thinking about implementation of queue vs array vs list kyle 7/5/20 '''
+    def send_packet(pkt, next_step):
+        # update current position
+        pkt.get_curPos()[p_queue]
+        set_curPos.(next_step)
+
+        next_step[p_queue]
+
 
 # -----------Below can be in the main funciton----------------------
 node_count = 100
@@ -68,7 +81,12 @@ init_num_packets = 100
 # Add attributes "capacity" and "queue" to keep track of packets
 G = nx.barabasi_albert_graph(node_count, edge_count)
 nx.set_node_attributes(G, max_capacity, 'max_capacity')
-nx.set_node_attributes(G, np.repeat(-1, max_capacity), 'current_queue')
+
+'''Used List instead of array for packet_queue'''
+'''https://www.geeksforgeeks.org/queue-in-python/'''
+p_queue = [-1]*max_capacity
+nx.set_node_attributes(G, p_queue, 'p_queue')
+#nx.set_node_attributes(G, np.repeat(-1, max_capacity), 'p_queue')
 
 # store in DynamicNetwork class
 initPackets = None
@@ -79,12 +97,12 @@ G.randomGeneratePackets(init_num_packets)
 
 # store packet index from Packets list
 for i in range(init_num_packets):
-    #temp is -1 * max_capacity
+    # temp is array: -1 * max_capacity
     temp = np.repeat(-1,
                      G._network.nodes[G._packets[i].startPos]['max capacity'])
-    '''Question: pos is initalized see line 71. Kyle 7/5/20'''
-    pos = (G._network.nodes[G._packets[i].startPos]['current_queue'] == temp)
-    G._network.nodes[G._packets[i].startPos]['current_queue'][pos][0] = i
+    '''Question: pos is a boolean? Kyle 7/5/20'''
+    pos = (G._network.nodes[G._packets[i].startPos]['p_queue'] == temp)
+    G._network.nodes[G._packets[i].startPos]['p_queue'][pos][0] = i
 
 del temp
 del pos
