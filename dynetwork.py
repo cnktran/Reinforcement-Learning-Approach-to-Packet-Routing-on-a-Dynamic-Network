@@ -9,10 +9,6 @@ import random
 import time
 import matplotlib.pyplot as plt
 import networkx as nx
-\documentclass[12pt]{article}
-\usepackage[utf8]{inputenc}
-\begin{document}
-\end{document}
 
 
 class DynamicNetwork(object):
