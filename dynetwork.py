@@ -55,18 +55,6 @@ class DynamicNetwork(object):
         # Assign Packets Object to the network
         self._network._packets = packetsObj
 
-    # return a boolean if a given node is at capacity
-    def isCapacity(self, node):
-        return(node[p_queue] > node[max_capacity])
-
-    '''still thinking about implementation of queue vs array vs list kyle 7/5/20 '''
-    def send_packet(pkt, next_step):
-        # update current position
-        pkt.get_curPos()[p_queue]
-        set_curPos.(next_step)
-
-        next_step[p_queue]
-
 
 # -----------Below can be in the main funciton----------------------
 node_count = 100
