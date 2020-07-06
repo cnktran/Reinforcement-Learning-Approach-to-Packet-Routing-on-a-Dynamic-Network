@@ -1,27 +1,21 @@
 import networkx as nx
-#import dynetx as dn
 import matplotlib.pyplot as plt
 import time
-from random import random
+import random
 import numpy as np
 import Packet
 import Packets
 
-
 # Question: Can I directly use functions in packet if I import Packets which included Packet
 '''PERSON class import WALLET， WALLET import MONEY. 
 In PERSON class directly use MONEY function '''
-
-# Note that this is a measure of edges per added node, not total number of edges
-# -----Question on this------ Kyle 7/5/20
-#fixed_positions = nx.spring_layout(G)
 
 
 class DynamicNetwork(object):
     def __init__(self, network, packets, rejections=0):
         self._network = network
         self._packets = packets
-        self._rejections = 0
+        self._rejections = rejections
 
     # Method declaration
     def randomGeneratePackets(self, num_packets_to_generate):
@@ -58,8 +52,9 @@ class DynamicNetwork(object):
 
 # -----------Below can be in the main funciton----------------------
 node_count = 100
-edge_count = 50
-max_capacity = 5 '''number of packets for a node to hold at a time '''
+# Note that this is a measure of edges per added node, not total number of edges
+edge_count = 5
+max_capacity = 5
 time_steps = 10
 edge_removal_min = 0
 edge_removal_max = 10
@@ -70,8 +65,8 @@ init_num_packets = 100
 G = nx.barabasi_albert_graph(node_count, edge_count)
 nx.set_node_attributes(G, max_capacity, 'max_capacity')
 
-'''Used List instead of array for packet_queue'''
-'''https://www.geeksforgeeks.org/queue-in-python/'''
+#Used List instead of array for packet_queue#
+#https://www.geeksforgeeks.org/queue-in-python/#
 p_queue = [-1]*max_capacity
 nx.set_node_attributes(G, p_queue, 'p_queue')
 #nx.set_node_attributes(G, np.repeat(-1, max_capacity), 'p_queue')
@@ -83,23 +78,22 @@ G = DynamicNetwork(G, initPackets)
 # random generate packets for network
 G.randomGeneratePackets(init_num_packets)
 
-# store packet index from Packets list
+'''
+store packet index from Packets list
 for i in range(init_num_packets):
     # temp is array: -1 * max_capacity
-    temp = np.repeat(-1,
-                     G._network.nodes[G._packets[i].startPos]['max capacity'])
-    '''Question: pos is a boolean? Kyle 7/5/20'''
+    temp = np.repeat(-1, G._network.nodes[G._packets[i].startPos]['max capacity'])
+    #Question: pos is a boolean? Kyle 7/5/20
     pos = (G._network.nodes[G._packets[i].startPos]['p_queue'] == temp)
     G._network.nodes[G._packets[i].startPos]['p_queue'][pos][0] = i
 
 del temp
 del pos
+'''
 
 # Dynamic Edge Change
-# use G.edges() to obtain a list of all edges
-# use G.neighbors(n) to obtain neighbors of node n
-
 r = Router()
+fixed_positions = nx.spring_layout(G)
 stripped_list = []
 for i in range(1, time_steps):
     # delete some edges
