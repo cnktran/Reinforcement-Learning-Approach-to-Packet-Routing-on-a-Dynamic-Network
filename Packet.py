@@ -1,8 +1,4 @@
-import networkx as nx
-import numpy as np
-
-
-class Packet:
+class Packet(object):
     def __init__(self, startPos, endPos, curPos, weight):
         self._startPos = startPos
         self._endPos = endPos
