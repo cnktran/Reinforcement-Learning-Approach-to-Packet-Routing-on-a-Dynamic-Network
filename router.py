@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+
 class Router:
     def __init__(self):
         pass
@@ -55,7 +56,7 @@ class Router:
         # g.nodes[curr]['current_queue'].pop(0)
         # g.nodes[next_step]['current_queue'].append(pkt)
         pkt.set_curPos(next_step)
-        
+
 
 
 # #test router functions

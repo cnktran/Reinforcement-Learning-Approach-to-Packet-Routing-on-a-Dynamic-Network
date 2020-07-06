@@ -55,6 +55,7 @@ class DynamicNetwork(object):
         # Assign Packets Object to the network
         self._network._packets = packetsObj
 
+
 # -----------Below can be in the main funciton----------------------
 node_count = 100
 edge_count = 50
