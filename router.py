@@ -14,33 +14,35 @@ import numpy as np
 class Router:
     def __init__(self):
         pass
+    
     # router using dijkstra
-
     def dijkstra_router(self, network):
-        for pkt in network._packets:
-            curr = pkt.get_curPos()
-            dest = pkt.get_endPos()
-            next_step = nx.dijkstra_path(network, curr, dest)[1]
-
-            # if the next node is full
-            if (network.isCapacity(next_step)):
-                return curr
-            else:
-                network.send_packet(pkt, next_step)
-                return next_step
+        for node in network._network.nodes:
+            for pkt in node['current_queue']:
+                curr = pkt.get_curPos()
+                dest = pkt.get_endPos()
+                next_step = nx.dijkstra_path(network, curr, dest)[1]
+    
+                # if the next node is full
+                if (network.isCapacity(next_step)):
+                    return curr
+                else:
+                    network.send_packet(pkt, next_step)
+                    return next_step
 
     # router using floyd-warshall
     def fw_router(self, network):
-        preds, _ = nx.floyd_warshall_predecessor_and_distance(network)
-        for pkt in network._packets:
-            curr = pkt.get_curPos()
-            dest = pkt.get_endPos()
-            next_step = nx.reconstruct_path(curr, dest, preds)[1]
-            if self.is_capacity(network, next_step):
-                return curr
-            else:
-                self.send_packet(network, pkt, next_step)
-                return next_step
+        preds, _ = nx.floyd_warshall_predecessor_and_distance(network._network)
+        for node in network._network.nodes:
+            for pkt in node['current_queue']:
+                curr = pkt.get_curPos()
+                dest = pkt.get_endPos()
+                next_step = nx.reconstruct_path(curr, dest, preds)[1]
+                if self.is_capacity(network, next_step):
+                    return curr
+                else:
+                    self.send_packet(network, pkt, next_step)
+                    return next_step
 
     # check if the node is at capacity
     def is_capacity(g, node):
