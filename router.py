@@ -5,8 +5,8 @@ Created on Wed Jul  1 16:46:11 2020
 @author:
 """
 
-import Packet
-import Packets
+#import Packet
+from Packets import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,10 +22,12 @@ class Router:
         # iterate all nodes
         for node in dyNetwork._network.nodes:
             # check if node contains packets to send
-            if not dyNetwork._network.nodes[node]['p_queue'].empty():
+            for i in range(min(dyNetwork._network.nodes[node]['max_band'], dyNetwork._network.nodes[node]['p_queue'].qsize())):
                 # pkt is the index of the packet
-                pkt = dyNetwork._network.nodes[node]['p_queue'].queue[0]
-
+                pkt = dyNetwork._network.nodes[node]['p_queue'].queue[i]
+                # adds the 'time'
+                dyNetwork._packets.packetList[pkt].set_time(
+                    dyNetwork._packets.packetList[pkt].get_time() + 1)
                 # call dijkstra algorithm from NETWORKX
                 currPos = dyNetwork._packets.packetList[pkt].get_curPos()
                 destPos = dyNetwork._packets.packetList[pkt].get_endPos()
@@ -43,7 +45,7 @@ class Router:
         preds, _ = nx.floyd_warshall_predecessor_and_distance(
             dyNetwork._network)
         for node in dyNetwork._network.nodes:
-            if not dyNetwork._network.nodes[node]['p_queue'].empty():
+            for i in range(min(dyNetwork._network.nodes[node]['max_band'], dyNetwork._network.nodes[node]['p_queue'].qsize)):
                 pkt = dyNetwork._network.nodes[node]['p_queue'].queue[0]
                 currPos = dyNetwork._packets.packetList[pkt].get_curPos()
                 destPos = dyNetwork._packets.packetList[pkt].get_endPos()
