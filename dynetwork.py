@@ -1,14 +1,15 @@
-from itertools import combinations
-from random import sample
-from queue import Queue
-import router as r
-import Packets
-import Packet
-import numpy as np
-import random
-import time
-import matplotlib.pyplot as plt
+
 import networkx as nx
+import matplotlib.pyplot as plt
+import time
+import random
+import numpy as np
+import Packet
+import Packets
+from router import Router
+from queue import Queue
+from random import sample
+from itertools import combinations
 
 
 class DynamicNetwork(object):
@@ -25,23 +26,25 @@ class DynamicNetwork(object):
         tempList = []
         for index in range(num_packets_to_generate):
             num_nodes = len(list(self._network.nodes()))
-            endPoints = sample(list(combinations(range(0, num_nodes), 2)), 1)
+            '''
+            endPoints = sample(list(combinations(range(0,num_nodes),2)),1)
             startNode = endPoints[0][0]
             endNode = endPoints[0][1]
-            # if the node is full then assign to another
-            while (len(self._network.nodes[startNode]['p_queue'].queue) >= self._network.nodes[startNode]['max_capacity']):
-                endPoints = sample(
-                    list(combinations(range(0, num_nodes), 2)), 1)
-                startNode = endPoints[0][0]
-                endNode = endPoints[0][1]
+            '''
+            startNode = random.randint(0, num_nodes-1)
+            endNode = random.randint(0, num_nodes-1)
 
-            startNode = self._network.nodes[startNode]
-            endNode = self._network.nodes[endNode]
+            # if the node is full then assign to another
+            while (len(self._network.nodes[startNode]['p_queue'].queue) >= self._network.nodes[startNode]['max_capacity'] or (startNode == endNode)):
+
+                startNode = random.randint(0, num_nodes-1)
+                endNode = random.randint(0, num_nodes-1)
             # creat packet object, assign a 0 weight
             curPack = Packet.Packet(startNode, endNode, startNode, index, 0)
 
             # put curPack into startNode's queue
-            startNode['p_queue'].queue.append(curPack.get_index())
+            self._network.nodes[startNode]['p_queue'].put(
+                curPack.get_index(), 1)
 
             tempList.append(curPack)
 
@@ -49,7 +52,7 @@ class DynamicNetwork(object):
         packetsObj = Packets.Packets(tempList)
 
         # Assign Packets Object to the network
-        self._network._packets = packetsObj
+        self._packets = packetsObj
 
 
 # -----------Below can be in the main funciton----------------------
@@ -57,7 +60,7 @@ node_count = 100
 # # Note that this is a measure of edges per added node, not total number of edges
 edge_count = 5
 max_capacity = 5
-time_steps = 2
+time_steps = 10
 edge_removal_min = 0
 edge_removal_max = 10
 init_num_packets = 100
@@ -65,9 +68,14 @@ init_num_packets = 100
 # Initialize a Network using Networkx
 # Add attributes "capacity" and "queue" to keep track of packets
 networkxGraph = nx.barabasi_albert_graph(node_count, edge_count)
-p_queue = Queue(max_capacity)
+p_queue_dict = {}
+for i in range(node_count):
+    temp = {'p_queue': Queue(max_capacity)}
+    p_queue_dict.update({i: temp})
+
+del temp
 nx.set_node_attributes(networkxGraph, max_capacity, 'max_capacity')
-nx.set_node_attributes(networkxGraph, p_queue, 'p_queue')
+nx.set_node_attributes(networkxGraph, p_queue_dict)
 
 # store in DynamicNetwork class
 G = DynamicNetwork(networkxGraph)
@@ -75,6 +83,8 @@ G.randomGeneratePackets(init_num_packets)
 # Dynamic Edge Change
 fixed_positions = nx.spring_layout(G._network)
 stripped_list = []
+r = Router()
+
 for i in range(1, time_steps):
     # delete some edges
     edges = G._network.edges()
@@ -84,7 +94,7 @@ for i in range(1, time_steps):
     G._network.remove_edges_from(strip)
     stripped_list.extend(strip)
     # restore some deleted edges
-    restore_number = random.randint(0, len(stripped_list) - 1)
+    restore_number = random.randint(0, len(stripped_list))
     restore = random.choices(stripped_list, k=restore_number)
     G._network.add_edges_from(restore)
     # perform routing
@@ -101,3 +111,4 @@ for i in range(1, time_steps):
     if G._deliveries == init_num_packets:
         print("Simulation done in " + str(i))
         break
+    print(G._deliveries)
