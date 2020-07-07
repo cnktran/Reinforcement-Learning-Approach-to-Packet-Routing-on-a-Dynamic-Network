@@ -1,4 +1,3 @@
-
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
@@ -36,7 +35,6 @@ class DynamicNetwork(object):
 
             # if the node is full then assign to another
             while (len(self._network.nodes[startNode]['p_queue'].queue) >= self._network.nodes[startNode]['max_capacity'] or (startNode == endNode)):
-
                 startNode = random.randint(0, num_nodes-1)
                 endNode = random.randint(0, num_nodes-1)
             # creat packet object, assign a 0 weight
@@ -54,6 +52,8 @@ class DynamicNetwork(object):
         # Assign Packets Object to the network
         self._packets = packetsObj
 
+
+'''Below can be removed'''''''''
 
 # -----------Below can be in the main funciton----------------------
 node_count = 100
