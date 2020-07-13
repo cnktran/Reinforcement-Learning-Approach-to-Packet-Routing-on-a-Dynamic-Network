@@ -88,7 +88,7 @@ class Router:
         destPos = dyNetwork._packets.packetList[pkt].get_endPos()
         sent = False
         try:
-            #band aid fix in case we have a 'bad' packet
+            # band aid fix in case we have a 'bad' packet
             if currPos == destPos:
                 print("bug")
                 dyNetwork._deliveries += 1
@@ -118,9 +118,9 @@ class Router:
     # check if the node is at capacity
 
     def is_capacity(self, dyNetwork, target_node):
-        # max_recieve_capacity is initialized with the value of the maximum queue any node can have 
+        # max_recieve_capacity is initialized with the value of the maximum queue any node can have
         return len(dyNetwork._network.nodes[target_node]['sending_queue']) == dyNetwork._network.nodes[target_node]['max_receive_capacity']
-        
+
     # send the packet the new node and update the current_queues
     def send_packet(self, dyNetwork, pkt, next_step):
         dyNetwork._packets.packetList[pkt].set_curPos(next_step)

@@ -24,15 +24,16 @@ plot_opt = False
 calculate_delivery_time = False
 calculate_congestion_max_q_len = False
 calculate_congestion_avg_q_len = False
-calculate_congestion_perc_at_capacity = True
+calculate_congestion_perc_at_capacity = False
+calculate_congestion_rejection = True
 
 # Same networkX network
 networkX = Stat_Simulator.Simulator.generateRandStaticGraph(
     node_count, edge_count, max_queue, max_transmit, network_type[0])
 
 # Different packet number (ak)
-network_load = [500, 700, 1000]
-
+#network_load = [200, 500, 700, 1000, 1500, 1800]
+network_load = [200, 500, 1000, 2000]
 if max(network_load) >= node_count * max_queue:
     print("Too many packets, increase max_queue.")
     sys.exit()
@@ -41,6 +42,7 @@ avg_deliv = []
 maxNumPkts = []
 avg_q_len = []
 avg_perc_at_capacity = []
+rejectionNums = []
 for i in range(len(network_load)):
     curLoad = network_load[i]
 
@@ -56,6 +58,7 @@ for i in range(len(network_load)):
     maxNumPkts.append(dynetworkSimulator._max_queue_length)
     avg_q_len.append(dynetworkSimulator._avg_queue_length)
     avg_perc_at_capacity.append(dynetworkSimulator._avg_perc_at_capacity)
+    rejectionNums.append(dynetworkSimulator._rejection_numbers)
 
     print("Simulation "+str(i+1)+" done.")
 
@@ -116,4 +119,19 @@ if(calculate_congestion_perc_at_capacity):
     plt.xlabel('Initial Number of Packets')
     plt.ylabel('Percent of Nodes at Capacity (in percentage)')
     plt.savefig("avg_perc_at_capacity.png")
+    plt.clf()
+
+'''
+Average percent of node working at capacity (queue >= sending capability) at each time stamp 
+'''
+if(calculate_congestion_rejection):
+    print("Average Rejection Numbers")
+    print(network_load)
+    print(rejectionNums)
+    plt.clf()
+    plt.title("Average Rejection Numbers vs Network Load")
+    plt.plot(network_load, rejectionNums)
+    plt.xlabel('Initial Number of Packets')
+    plt.ylabel('Percent of Nodes at Capacity (in percentage)')
+    plt.savefig("rejectionNums.png")
     plt.clf()
