@@ -3,6 +3,7 @@ import random
 import numpy as np
 import Packet
 
+
 class DynamicNetwork(object):
     def __init__(self, network, packets=None, rejections=0, deliveries=0, qtable=None):
 
@@ -13,13 +14,14 @@ class DynamicNetwork(object):
         self._qtable = qtable
         self._avg_q_len_arr = []
         self._avg_perc_at_capacity_arr = []
-
+        self._max_queue_len = 0
     # Method declaration
+
     def randomGeneratePackets(self, num_packets_to_generate):
         tempList = []
         for index in range(num_packets_to_generate):
             notfull = list(range(self._network.number_of_nodes()))
-            num_nodes = len(list(self._network.nodes()))#'sending_queue'
+            num_nodes = len(list(self._network.nodes()))  # 'sending_queue'
             startNode = random.randint(0, num_nodes-1)
             endNode = random.randint(0, num_nodes-1)
             # if the node is full then assign to another
@@ -38,7 +40,7 @@ class DynamicNetwork(object):
             # put curPack into startNode's queue
             self._network.nodes[startNode]['sending_queue'].append(
                 curPack.get_index())
-                
+
             tempList.append(curPack)
 
         # create Packets Object

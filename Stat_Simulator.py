@@ -77,6 +77,7 @@ class Simulator(object):
 
         # iterate each simulation stamp
         for i in range(1, time_steps):
+
             # Dynamic Edges
             # First delete and add to stripped_list
             edges = self._dynetwork._network.edges()
@@ -158,8 +159,7 @@ def main(
                               max_edge_removal, init_num_packets, router_type, plot_opt))
 
     # update congestion measures
-    dynetworkSimulator._max_queue_length = dynetworkSimulator._dynetwork._network.nodes[
-        0]['max_queue_len']
+    dynetworkSimulator._max_queue_length = dynetworkSimulator._dynetwork._max_queue_len
     dynetworkSimulator._avg_queue_length = np.average(
         dynetworkSimulator._dynetwork._avg_q_len_arr)
 

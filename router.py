@@ -17,19 +17,20 @@ class Router:
         temp_num_node_at_capacity = 0
         # iterate all nodes
         for node in dyNetwork._network.nodes:
+            # print("Node#: ", node)
             # provides pointer for queue of current node
             curr_queue = dyNetwork._network.nodes[node]['sending_queue']
+            sending_capacity = dyNetwork._network.nodes[node]['max_send_capacity']
+
             queue_size = len(curr_queue)
 
             # Congestion Measure #1: max queue len
-            if(queue_size > dyNetwork._network.nodes[0]['max_queue_len']):
-                dyNetwork._network.nodes[0]['max_queue_len'] = queue_size
+            if queue_size > dyNetwork._max_queue_len:
+                dyNetwork._max_queue_len = queue_size
 
             # Congestion Measure #2: avg queue len pt1
             if(queue_size > 0):
                 temp_node_queue_lens.append(queue_size)
-
-            sending_capacity = dyNetwork._network.nodes[node]['max_send_capacity']
 
             # Congestion Measure #3: avg percent at capacity
             if(queue_size > sending_capacity):
@@ -38,9 +39,8 @@ class Router:
 
             # stores packets which currently have no destination path
             remaining = []
-            sent = []
-            idxctr = 0
             sendctr = 0
+
             for i in range(queue_size):
 
                 # when node cannot send anymore packets break and move to next node
@@ -50,12 +50,10 @@ class Router:
                     dyNetwork, curr_queue, remaining, router_type, i)
                 if sent:
                     sendctr += 1
-                # else:
-                #    print(remaining)
-                idxctr += 1
 
+            # update receiving_queue for next turn
             dyNetwork._network.nodes[node]['receiving_queue'] = self.fixed_queue(
-                dyNetwork, remaining, node, idxctr)
+                dyNetwork, remaining, node)
 
         # dumps received packets into the sending queue
         for node in dyNetwork._network.nodes:
@@ -70,17 +68,18 @@ class Router:
         # Congestion Measure #3: percent node at capacity
         dyNetwork._avg_perc_at_capacity_arr.append(temp_num_node_at_capacity)
 
-    def fixed_queue(self, dyNetwork, no_path, node, i):
+    # no path is the remaining
+    def fixed_queue(self, dyNetwork, no_path, node):
+
         curr_queue = dyNetwork._network.nodes[node]['sending_queue']
         receiving_queue = dyNetwork._network.nodes[node]['receiving_queue']
 
-        receiving_queue = no_path + curr_queue + receiving_queue
-        return receiving_queue
+        toReturn = no_path + receiving_queue + curr_queue
+        return toReturn
 
     def handle_node_packet(self, dyNetwork, curr_queue, remaining, router_type, i):
         pkt = curr_queue[0]  # current packet
         # increment packet delivery time stamp
-        current_time = dyNetwork._packets.packetList[pkt].get_time()
         dyNetwork._packets.packetList[pkt].set_time(
             dyNetwork._packets.packetList[pkt].get_time() + 1)
         # gives current and destination nodes of packet
@@ -90,7 +89,7 @@ class Router:
         try:
             # band aid fix in case we have a 'bad' packet
             if currPos == destPos:
-                print("bug")
+                # print("bug")
                 dyNetwork._deliveries += 1
                 curr_queue.remove(pkt)
 
@@ -102,8 +101,8 @@ class Router:
                     remaining.append(pkt)
                     dyNetwork._rejections += 1
                 else:
-                    self.send_packet(dyNetwork, pkt, next_step)
                     curr_queue.remove(pkt)
+                    self.send_packet(dyNetwork, pkt, next_step)
                     sent = True
         except (nx.NetworkXNoPath, KeyError):
             curr_queue.remove(pkt)
@@ -119,12 +118,15 @@ class Router:
 
     def is_capacity(self, dyNetwork, target_node):
         # max_recieve_capacity is initialized with the value of the maximum queue any node can have
-        return len(dyNetwork._network.nodes[target_node]['sending_queue']) == dyNetwork._network.nodes[target_node]['max_receive_capacity']
+        total_queue_len = len(dyNetwork._network.nodes[target_node]['sending_queue']) + len(
+            dyNetwork._network.nodes[target_node]['receiving_queue'])
+        return total_queue_len == dyNetwork._network.nodes[target_node]['max_receive_capacity']
 
     # send the packet the new node and update the current_queues
     def send_packet(self, dyNetwork, pkt, next_step):
         dyNetwork._packets.packetList[pkt].set_curPos(next_step)
 
+        # check when reached destinition
         if dyNetwork._packets.packetList[pkt].get_curPos() == dyNetwork._packets.packetList[pkt].get_endPos():
             dyNetwork._deliveries += 1
         else:
