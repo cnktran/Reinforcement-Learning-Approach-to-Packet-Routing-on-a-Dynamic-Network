@@ -11,6 +11,7 @@ from math import ceil
 
 class Simulator(object):
     def __init__(self, networkxObject, init_num_packets):
+
         G = DynamicNetwork(networkxObject)
         G.randomGeneratePackets(init_num_packets)
         self._dynetwork = G

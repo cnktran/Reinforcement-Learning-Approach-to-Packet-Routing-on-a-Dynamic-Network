@@ -2,15 +2,15 @@ import Stat_Simulator
 import matplotlib.pyplot as plt
 import copy
 import sys
-
+import numpy as np
 '''graph features'''
-node_count = 500
+node_count = 1000
 # Note that this is a measure of edges per added node, for Barbarsi. #Total number of edge for Erdos
 edge_count = 3
 # specifies maximum bandwith for each edge
 max_transmit = 10
 # specifies maximum queue size for each node
-max_queue = 10
+max_queue = 15
 
 '''simulation features'''
 time_steps = 200
@@ -21,18 +21,18 @@ router_type = 'dijkstra'
 plot_opt = False
 
 '''statistics option'''
-calculate_delivery_time = False
-calculate_congestion_max_q_len = True
-calculate_congestion_avg_q_len = False
-calculate_congestion_perc_at_capacity = False
-calculate_congestion_rejection = False
+calculate_delivery_time = 1
+calculate_congestion_max_q_len = 1
+calculate_congestion_avg_q_len = 1
+calculate_congestion_perc_at_capacity = 1
+calculate_congestion_rejection = 1
 
 # Same networkX network
 networkX = Stat_Simulator.Simulator.generateRandStaticGraph(
     node_count, edge_count, max_queue, max_transmit, network_type[0])
 
 # Different packet number (ak)
-network_load = [200, 500, 700, 1000, 1500, 1800]
+network_load = np.arange(100, 5000, 100)
 #network_load = [2000]
 if max(network_load) >= node_count * max_queue:
     print("Too many packets, increase max_queue.")
@@ -61,6 +61,7 @@ for i in range(len(network_load)):
     rejectionNums.append(dynetworkSimulator._rejection_numbers)
 
     print("Simulation "+str(i+1)+" done.")
+    dynetworkSimulator._dynetwork._stripped_list = []
 
 
 if(calculate_delivery_time):

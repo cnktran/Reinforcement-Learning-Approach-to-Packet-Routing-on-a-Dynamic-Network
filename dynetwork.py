@@ -15,22 +15,26 @@ class DynamicNetwork(object):
         self._avg_q_len_arr = []
         self._avg_perc_at_capacity_arr = []
         self._max_queue_len = 0
+        self._stripped_list = []
+
     # Method declaration
 
     def randomGeneratePackets(self, num_packets_to_generate):
+
         tempList = []
+        notfull = list(range(self._network.number_of_nodes()))
+
+        num_nodes = len(list(self._network.nodes()))  # 'sending_queue'
+
         for index in range(num_packets_to_generate):
-            notfull = list(range(self._network.number_of_nodes()))
-            num_nodes = len(list(self._network.nodes()))  # 'sending_queue'
-            startNode = random.randint(0, num_nodes-1)
+
+            startNode = random.choice(notfull)
             endNode = random.randint(0, num_nodes-1)
             # if the node is full then assign to another
             while (len(self._network.nodes[startNode]['sending_queue']) >= self._network.nodes[startNode]['max_receive_capacity']):
                 notfull.remove(startNode)
-                try:
-                    startNode = random.choice(notfull)
-                except:
-                    print("Network cannot handle this many packets bruv")
+                startNode = random.choice(notfull)
+
             while (startNode == endNode):
                 endNode = random.randint(0, num_nodes-1)
 
