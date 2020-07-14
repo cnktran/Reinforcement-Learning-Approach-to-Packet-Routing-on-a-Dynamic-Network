@@ -61,7 +61,7 @@ class Router:
             dyNetwork._network.nodes[node]['receiving_queue'] = []
 
         # Congestion Measure #2: avg queue len pt2
-        if len(temp_node_queue_lens) >= 1:
+        if len(temp_node_queue_lens) > 1:
             dyNetwork._avg_q_len_arr.append(
                 np.average(temp_node_queue_lens[1:]))
 
