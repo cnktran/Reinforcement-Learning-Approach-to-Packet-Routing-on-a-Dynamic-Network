@@ -1,7 +1,7 @@
 # Dynamic Routing
 
 ## Project Description:
-To test various packet routing algorithms on a dynamic network, we create a simulation of a network with random edge change (on/off and weights) and create a router that determines paths for each packet. We generate a given number of packets at the beginning of one episode and allow the simulation to run a number of time steps before measuring packet delivery time and level of network congestion.
+To test various packet routing algorithms on a dynamic network, we create a simulation of a network with random edge change (on/off and weights) and create a router that determines paths for each packet. The router then conduct Q-learning and uses Q-table to route packets.
 
 ## Requirements:
 - NetworkX
@@ -9,34 +9,42 @@ To test various packet routing algorithms on a dynamic network, we create a simu
 - Matplotlib
 
 ## Files:
-- Animator.py
-- dynetwork.py
-- router.py
-- Simulator.py
-- Stat_Simulator.py
-- Statistics.py
+-
 
 ## File Descriptions:
 - Animator.py
-    - Takes images in directory network_images and creates animation.mp4. Edit here for animation details (fps, size, etc.)
+	used to generate screenshots for each time stamp
 - dynetwork.py
-    - Defines network object which contains information on the packets, deliveries, and rejections.
+	used to set up network features. Called by main class
 - Packet.py
-    - Defines packet object.
-- router.py
-    - Determines next step taken by each packet on the network. Contains various routing algorithms, including Dijkstra, Floyd-Warshall, and Q-learning.
-- Simulator.py
-    - Contains main function and performs simulation over given number of time steps. Outputs average delivery time.
-- Stat_Simulator.py
-    - Version of Simulator.py to be used with Statistics.py.
-- Statistics.py
-    - Runs simulation multiple times to view effects of changing network load on delivery time and congestion.
+	file to define packet class
+- our_agent.py
+    used to create agent instance and adjust agent learning policy
+- our_env.py
+    used to create Q-learning environment and set up network
+- Q_Routing.py
+    used to simulate Q-learning based on our_env.py and produce statsitics for learning process
+- Q_Routing_NLs.py
+    used to simulate Q-learning based on our_env.py and produce statsitics for post-learning process on different network load
 
+
+- one_time_env.py
+	used to create Q-learning environment for one-round of learning (used for debuging purposes)
+- one_time_learning.py
+	used to run Q-learning based on environment from one_time_env (used for debuging purposes)
 ---
 
 ## Usage:
-- To perform individual simulations, open Simulator.py and edit parameters at the bottom of the file before running.
-- To perform a meta-simulation across multiple network loads, open Statistics.py and edit parameters at the top of the file before running. Make sure to set plot_opt = False. You can determine which network loads you want to test by changing the values in the list network_load = [1000, 3000, 5000, 7000, 9000]. You can plot results in terms of average delivery time, average queue size, and maximum queue size.
+- To perform Q-learning and observe learning results. Open Q_Routing.py and specify 'numEpisode' being number of times you wish the program to learn
+Then specify 'time_steps' being the maximum time stamps for router to finish route all packets
+
+To change the network setup, open our_env.py to specify setup.
+
+To adjust learning rates, open our_agent.py to specify setup.
+
+- To perform Q-learning and observe learning results and observe performance on different network loads. Open Q_Routing_NLs.py (Network Loads). Specify 'numEpisode' being number of times you wish the program to learn. Then specify 'time_steps' being the maximum time stamps for router to finish route all packets. Then specify network load to perform simulation.
+
+-More instructions will be updating soon...
 ### Parameter Discussion
 - node_count : Number of nodes on the network.
 - edge_count : Number of edges on the network. For barabasi-albert (see network_type), specify **edges per node**. For erdos-renyi, specify **total number of edges desired**.

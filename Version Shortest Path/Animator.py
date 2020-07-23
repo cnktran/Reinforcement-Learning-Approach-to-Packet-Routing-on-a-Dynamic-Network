@@ -11,11 +11,12 @@ def animate(frame_ct):
 	myimages = []
 
 	#loops through available png:s
-	for p in range(1, frame_ct):
+	for p in range(0, frame_ct):
 
 	    ## Read in picture
 	    fname = "network_images/dynet%i.png" %p 
 	    img = mgimg.imread(fname)
+	    plt.axis('off')
 	    imgplot = plt.imshow(img)
 
 	    # append AxesImage object to the list
