@@ -40,12 +40,13 @@ for i_episode in range(numEpisode):
         if plot_opt:
             env.render()
 
+        '''
         # store arributes for stats measure
         if i_episode == (numEpisode - 1):
             f = open("q-learning/dict.txt", "w")
             f.write(str(agent.q))
             f.close()
-
+        '''
         if (env.dynetwork._deliveries >= (env.npackets + env.dynetwork._max_initializations)):
             print("done!")
             break
