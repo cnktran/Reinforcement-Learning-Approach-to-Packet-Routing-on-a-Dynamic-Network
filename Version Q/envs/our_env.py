@@ -22,8 +22,8 @@ class dynetworkEnv(gym.Env):
         self.nedges = 3
         self.max_queue = 150
         self.max_transmit = 10
-        self.npackets = 1
-        self.max_initializations = 10000
+        self.npackets = 500
+        self.max_initializations = 200
         self.max_edge_weight = 10
         self.min_edge_removal = 0
         self.max_edge_removal = 10
