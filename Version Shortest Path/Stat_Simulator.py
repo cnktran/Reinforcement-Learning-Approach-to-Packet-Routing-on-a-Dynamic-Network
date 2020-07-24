@@ -40,6 +40,7 @@ class Simulator(object):
         self._avg_queue_length = 0
         self._avg_perc_at_capacity = 0
         self._rejection_numbers = 0
+        self._avg_perc_empty =0
 
 # method to create Simulator with random generated graphs
 
@@ -201,5 +202,6 @@ def main(
         dynetworkSimulator._dynetwork._num_capacity_node)/np.sum(
         dynetworkSimulator._dynetwork._num_working_node)*100
 
+    dynetworkSimulator._avg_perc_empty = np.average(dynetworkSimulator._dynetwork._num_empty_node)*100
 
     dynetworkSimulator._rejection_numbers = dynetworkSimulator._dynetwork._rejections

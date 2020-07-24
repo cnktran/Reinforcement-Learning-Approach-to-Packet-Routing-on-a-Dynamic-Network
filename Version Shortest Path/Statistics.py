@@ -38,6 +38,7 @@ calculate_congestion_max_q_len = True
 calculate_congestion_avg_q_len = True
 calculate_congestion_perc_at_capacity = True
 calculate_congestion_rejection = True
+calculate_perc_empty = True
 
 # Same networkX network
 networkX = Stat_Simulator.Simulator.generateRandStaticGraph(
@@ -55,6 +56,7 @@ maxNumPkts = []
 avg_q_len = []
 avg_perc_at_capacity = []
 rejectionNums = []
+avg_perc_empty_nodes =[]
 
 for i in range(len(network_load)):
     
@@ -90,8 +92,10 @@ for i in range(len(network_load)):
         maxNumPkts.append(dynetworkSimulator._max_queue_length)
         avg_q_len.append(dynetworkSimulator._avg_queue_length)
         avg_perc_at_capacity.append(dynetworkSimulator._avg_perc_at_capacity)
-        rejectionNums.append(dynetworkSimulator._rejection_numbers)
-        
+        rejectionNums.append(dynetworkSimulator._rejection_numbers/dynetworkSimulator._dynetwork._deliveries)
+        avg_perc_empty_nodes.append(dynetworkSimulator._avg_perc_empty)
+
+
         dynetworkSimulator.clear_queues()
 
     print("Simulation "+str(i+1)+" done.")
@@ -162,16 +166,31 @@ if(calculate_congestion_perc_at_capacity):
     plt.clf()
 
 '''
-Average percent of node working at capacity (queue >= sending capability) at each time stamp 
+Average Average Rejection Numbers at each time stamp 
 '''
 if(calculate_congestion_rejection):
-    print("Total Rejection Numbers")
+    print("Average Rejection Numbers")
     print(network_load)
-    print(rejectionNums)
+    print(np.around(np.array(rejectionNums),3))
     plt.clf()
-    plt.title("Total Rejection Numbers vs Network Load")
+    plt.title("Average Rejection Numbers vs Network Load")
     plt.scatter(np.repeat(network_load, trials), rejectionNums)
     plt.xlabel('Initial Number of Packets')
     plt.ylabel('Number of packet rejections')
     plt.savefig(results_dir + "rejectionNums.png")
+    plt.clf()
+
+'''
+Average Average Percent Empty Nodes at each time stamp 
+'''
+if(calculate_perc_empty):
+    print("Percent of Empty Nodes")
+    print(network_load)
+    print(np.around(np.array(avg_perc_empty_nodes),3))
+    plt.clf()
+    plt.title("Percent of Empty Nodes Per Episode")
+    plt.scatter(np.repeat(network_load, trials), avg_perc_empty_nodes)
+    plt.xlabel('Initial Number of Packets')
+    plt.ylabel('Percent of Empty Nodes  (in percentage)')
+    plt.savefig(results_dir + "avg_perc_empty.png")
     plt.clf()

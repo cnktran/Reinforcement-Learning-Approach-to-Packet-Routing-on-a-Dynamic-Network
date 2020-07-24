@@ -75,6 +75,7 @@ class Router:
 
         dyNetwork._num_working_node.append(temp_num_nonEmpty_node)
 
+        dyNetwork._num_empty_node.append((dyNetwork.num_nodes-temp_num_nonEmpty_node)/len(list(dyNetwork._network.nodes())))
     # takes packets which are now ready to be sent and puts them in the sending queue of the node
     def update_queues(self, dyNetwork):
         for nodeIdx in dyNetwork._network.nodes:
