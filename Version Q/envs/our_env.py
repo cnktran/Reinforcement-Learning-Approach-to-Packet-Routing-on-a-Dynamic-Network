@@ -22,8 +22,8 @@ class dynetworkEnv(gym.Env):
         self.nedges = 3
         self.max_queue = 150
         self.max_transmit = 10
-        self.npackets = 5000
-        self.max_initializations = 100
+        self.npackets = 1
+        self.max_initializations = 10000
         self.max_edge_weight = 10
         self.min_edge_removal = 0
         self.max_edge_removal = 10
@@ -225,7 +225,7 @@ class dynetworkEnv(gym.Env):
         temp_node_queue_lens = [0]
         temp_num_node_at_capacity = 0
         temp_num_nonEmpty_node = 0
-        
+
         # iterate all nodes
         for nodeIdx in self.dynetwork._network.nodes:
             """ the self.nodes_traversed tracks the number of nodes we have looped over, guarunteeing that each packet will have the same epsilon at each time step"""
@@ -284,11 +284,7 @@ class dynetworkEnv(gym.Env):
         self.dynetwork._num_capacity_node.append(temp_num_node_at_capacity)
     
         self.dynetwork._num_working_node.append(temp_num_nonEmpty_node)
-
-        # Congestion Mesure #4: percent empty nodes
-        self.dynetwork._num_empty_node.append(self.dynetwork.num_nodes-temp_num_nonEmpty_node)
-        #print(self.dynetwork.num_nodes-temp_num_nonEmpty_node)
-
+        
     def updateWhole(self,agent, learn = True):
         self.change_network()
         self.purgatory()
