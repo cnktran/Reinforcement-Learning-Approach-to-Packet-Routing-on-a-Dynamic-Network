@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 This program does complete Q-learning process
 '''
 
-numEpisode = 10  # aka number of rounds of routing
+numEpisode = 60  # aka number of rounds of routing
 time_steps = 2000  # number of steps give the network to sent packet
 learning_plot = True
 plot_opt = False
@@ -19,7 +19,7 @@ maxNumPkts = []
 avg_q_len = []
 avg_perc_at_capacity = []
 rejectionNums = []
-
+avg_perc_empty_nodes =[]
 # learn numEpisode times
 for i_episode in range(numEpisode):
     print("---------- Episode:", i_episode+1," ----------")
@@ -41,10 +41,10 @@ for i_episode in range(numEpisode):
             env.render()
 
         # store arributes for stats measure
-        if i_episode == (numEpisode - 1):
-            f = open("q-learning/dict.txt", "w")
-            f.write(str(agent.q))
-            f.close()
+        #if i_episode == (numEpisode - 1):
+        #    f = open("q-learning/dict.txt", "w")
+        #    f.write(str(agent.q))
+        #   f.close()
 
         if (env.dynetwork._deliveries >= (env.npackets + env.dynetwork._max_initializations)):
             print("done!")
@@ -54,11 +54,22 @@ for i_episode in range(numEpisode):
     avg_deliv.append(env.calc_avg_delivery())
     maxNumPkts.append(env.dynetwork._max_queue_length)
     avg_q_len.append(np.average(env.dynetwork._avg_q_len_arr))
+
+    #avg_perc_at_capacity.append(
+        #np.sum(env.dynetwork._num_capacity_node) / env.dynetwork.num_nodes/t * 100)
+
     avg_perc_at_capacity.append(
         np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
-    rejectionNums.append(env.dynetwork._rejections)
+
+    
+
+    avg_perc_empty_nodes.append(
+        np.average(env.dynetwork._num_empty_node) / env.dynetwork.num_nodes *100)
+
+    rejectionNums.append(env.dynetwork._rejections/env.dynetwork._deliveries)
 
     env.reset()
+
 script_dir = os.path.dirname(__file__)
 results_dir = os.path.join(script_dir, '.')
 if not os.path.isdir(results_dir):
@@ -68,7 +79,7 @@ if learning_plot:
     print("Average Delivery Time")
     print(np.around(np.array(avg_deliv),3))
     plt.clf()
-    plt.title("Average Delivery Time Per Episode")
+    plt.title("Average Delivery Time Per Packet")
     plt.scatter(range(1, numEpisode + 1), avg_deliv)
     plt.xlabel('Episode')
     plt.ylabel('Avg Delivery Time')
@@ -78,7 +89,7 @@ if learning_plot:
     print("Max Queue Length")
     print(maxNumPkts)
     plt.clf()
-    plt.title("Maximum Num of Pkts a Node Hold Per Episode")
+    plt.title("Maximum Num of Pkts a Node Hold Vs Episode")
     plt.scatter(list(range(1, numEpisode + 1)), maxNumPkts)
     plt.xlabel('Episode')
     plt.ylabel('Maximum Number of Packets being hold by a Node')
@@ -105,12 +116,22 @@ if learning_plot:
     plt.savefig(results_dir + "avg_perc_at_capacity.png")
     plt.clf()
 
-    print("Total Rejection Numbers")
-    print(rejectionNums)
+    print("Percent of Empty Nodes")
+    print(np.around(np.array(avg_perc_empty_nodes),3))
     plt.clf()
-    plt.title("Total Rejection Numbers Per Episode")
+    plt.title("Percent of Empty Nodes Per Episode")
+    plt.scatter(list(range(1, numEpisode + 1)), avg_perc_empty_nodes)
+    plt.xlabel('Episode')
+    plt.ylabel('Percent of Empty Nodes  (in percentage)')
+    plt.savefig(results_dir + "avg_perc_empty.png")
+    plt.clf()
+
+    print("Average Rejection Numbers")
+    print(np.around(np.array(rejectionNums),3))
+    plt.clf()
+    plt.title("Average Rejection Numbers Per Packet")
     plt.scatter(list(range(1, numEpisode + 1)), rejectionNums)
     plt.xlabel('Episode')
-    plt.ylabel('Number of packet rejections')
+    plt.ylabel('Average Number of packet rejections')
     plt.savefig(results_dir + "rejectionNums.png")
     plt.clf()

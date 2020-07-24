@@ -18,7 +18,7 @@ class QAgent(object):
             "discount": 0.9,
             "n_iter": 10000000, # Number of iterations
             "update_epsilon": False,
-            "decay_rate": 0.99999}
+            "decay_rate": 0.999}
           # whether or not we are allowed to upadte epsilon
         self.q = self.generate_q_table(dynetwork._network)
 
@@ -36,7 +36,7 @@ class QAgent(object):
                             # all possible neighbors
                             q_table[(currpos, dest)][action] = - dists[action][dest]
                         except KeyError:
-                            print("No path aaaaaaaaaaaaaaaaaaaa")
+                            print("No path")
                             q_table[(currpos, dest)][action] = -1000
                     else:
                         q_table[(currpos, dest)][action] = 10

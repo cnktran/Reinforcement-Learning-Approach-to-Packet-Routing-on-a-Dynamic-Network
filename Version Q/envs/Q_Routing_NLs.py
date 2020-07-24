@@ -12,7 +12,7 @@ learning_plot = True
 comparison_plots = True
 plot_opt = False
 
-network_load = np.arange(500, 5500, 500)
+network_load = np.arange(1000, 5500, 800)
 trials = 5
 
 # establish enviroment
@@ -21,18 +21,14 @@ env.resetForTest(max(network_load))
 agent = QAgent(env.dynetwork)
 
 '''stats measures'''
-avg_deliv = []
-maxNumPkts = []
-avg_q_len = []
-avg_perc_at_capacity = []
-rejectionNums = []
+
 
 avg_deliv_learning = []
 maxNumPkts_learning = []
 avg_q_len_learning = []
 avg_perc_at_capacity_learning = []
 rejectionNums_learning = []
-
+avg_perc_empty_nodes_learning=[]
 
 # learn numEpisode times
 for i_episode in range(numEpisode):
@@ -77,25 +73,25 @@ for i_episode in range(numEpisode):
     maxNumPkts_learning.append(env.dynetwork._max_queue_length)
     avg_q_len_learning.append(np.average(env.dynetwork._avg_q_len_arr))
     avg_perc_at_capacity_learning.append(
-        np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
-    rejectionNums_learning.append(env.dynetwork._rejections)
-
+       np.sum(env.dynetwork._num_capacity_node) /env.dynetwork.num_nodes/t * 100)
+    #avg_perc_at_capacity_learning.append(
+    #    np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
+    avg_perc_empty_nodes_learning.append((np.sum(env.dynetwork._num_capacity_node)/env.dynetwork.num_nodes/t) *100)
+    rejectionNums_learning.append(env.dynetwork._rejections/env.dynetwork._deliveries)
+    
     env.resetForTest(max(network_load))
     
-script_dir = os.path.dirname(__file__)
-results_dir = os.path.join(script_dir, 'plots/')
-if not os.path.isdir(results_dir):
-    os.makedirs(results_dir)
 
 
 
+'''stats measures'''
 #After learning, testing begin
 avg_deliv = []
 maxNumPkts = []
 avg_q_len = []
 avg_perc_at_capacity = []
 rejectionNums = []
-
+avg_perc_empty_nodes=[]
 for i in range(len(network_load)):
     curLoad = network_load[i]
     
@@ -133,7 +129,19 @@ for i in range(len(network_load)):
         avg_q_len.append(np.average(env.dynetwork._avg_q_len_arr))
         avg_perc_at_capacity.append(
             np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
-        rejectionNums.append(env.dynetwork._rejections)
+        
+        avg_perc_empty_nodes.append(
+            (np.sum(env.dynetwork._num_empty_node) / env.dynetwork.num_nodes/t) *100)
+
+        rejectionNums.append(env.dynetwork._rejections/env.dynetwork._deliveries)
+
+script_dir = os.path.dirname(__file__)
+results_dir = os.path.join(script_dir, 'plots/')
+if not os.path.isdir(results_dir):
+    os.makedirs(results_dir)
+learn_results_dir = os.path.join(script_dir, 'plots/learnRes/')
+if not os.path.isdir(learn_results_dir):
+    os.makedirs(learn_results_dir)
 
 
 if comparison_plots:
@@ -177,14 +185,24 @@ if comparison_plots:
     plt.savefig(results_dir + "avg_perc_at_capacity.png")
     plt.clf()
 
-    print("Total Rejection Numbers")
+    print("Average Rejection Numbers")
     print(rejectionNums)
     plt.clf()
-    plt.title("Total Rejection Numbers vs Network Load")
+    plt.title("Average Rejection Numbers vs Network Load")
     plt.scatter(np.repeat(network_load, trials), rejectionNums)
     plt.xlabel('Number of packets')
     plt.ylabel('Number of packet rejections')
     plt.savefig(results_dir + "rejectionNums.png")
+    plt.clf()
+
+    print("Percent of Empty Nodes")
+    print(np.around(np.array(avg_perc_empty_nodes),3))
+    plt.clf()
+    plt.title("Percent of Empty Nodes Per Episode")
+    plt.scatter(np.repeat(network_load, trials), avg_perc_empty_nodes)
+    plt.xlabel('Number of packets')
+    plt.ylabel('Percent of Empty Nodes  (in percentage)')
+    plt.savefig(results_dir + "avg_perc_empty.png")
     plt.clf()
 
 if learning_plot:
@@ -195,7 +213,7 @@ if learning_plot:
     plt.scatter(list(range(1, numEpisode + 1)), avg_deliv_learning)
     plt.xlabel('Episode')
     plt.ylabel('Avg Delivery Time')
-    plt.savefig(results_dir + "avg_deliv_learning.png")
+    plt.savefig(learn_results_dir + "avg_deliv_learning.png")
     plt.clf()
 
     print("Max Queue Length")
@@ -205,7 +223,7 @@ if learning_plot:
     plt.scatter(list(range(1, numEpisode + 1)), maxNumPkts_learning)
     plt.xlabel('Episode')
     plt.ylabel('Maximum Number of Packets being hold by a Node')
-    plt.savefig(results_dir + "maxNumPkts_learning.png")
+    plt.savefig(learn_results_dir + "maxNumPkts_learning.png")
     plt.clf()
 
     print("Average Non-Empty Queue Length")
@@ -215,7 +233,7 @@ if learning_plot:
     plt.scatter(list(range(1, numEpisode + 1)), avg_q_len_learning)
     plt.xlabel('Episode')
     plt.ylabel('Average Number of Packets being hold by a Node')
-    plt.savefig(results_dir + "avg_q_len_learning.png")
+    plt.savefig(learn_results_dir + "avg_q_len_learning.png")
     plt.clf() 
 
     print("Percent of Nodes at Capacity")
@@ -225,16 +243,27 @@ if learning_plot:
     plt.scatter(list(range(1, numEpisode + 1)), avg_perc_at_capacity_learning)
     plt.xlabel('Episode')
     plt.ylabel('Percent of Nodes at Capacity (in percentage)')
-    plt.savefig(results_dir + "avg_perc_at_capacity_learning.png")
+    plt.savefig(learn_results_dir + "avg_perc_at_capacity_learning.png")
     plt.clf()
 
-    print("Total Rejection Numbers")
+    
+    print("Percent of Empty Nodes")
+    print(np.around(np.array(avg_perc_empty_nodes_learning),3))
+    plt.clf()
+    plt.title("Percent of Empty Nodes Per Episode")
+    plt.scatter(list(range(1, numEpisode + 1)), avg_perc_empty_nodes_learning)
+    plt.xlabel('Episode')
+    plt.ylabel('Percent of Empty Nodes  (in percentage)')
+    plt.savefig(learn_results_dir + "avg_perc_empty_learning.png")
+    plt.clf()
+
+    print("Average Rejection Numbers")
     print(rejectionNums_learning)
     plt.clf()
-    plt.title("Total Rejection Numbers Per Episode")
+    plt.title("Average Rejection Numbers Per Episode")
     plt.scatter(list(range(1, numEpisode + 1)), rejectionNums_learning)
     plt.xlabel('Episode')
-    plt.ylabel('Number of packet rejections')
-    plt.savefig(results_dir + "rejectionNums_learning.png")
+    plt.ylabel('Average Number of packet rejections')
+    plt.savefig(learn_results_dir + "rejectionNums_learning.png")
     plt.clf()
     

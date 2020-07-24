@@ -21,6 +21,7 @@ class DynamicNetwork(object):
         self._max_initializations = max_initializations
         self.num_nodes = None
         self._purgatory = []
+        self._num_empty_node=[]
 
     # Method declaration
     def randomGeneratePackets(self, num_packets_to_generate):
