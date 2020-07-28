@@ -61,7 +61,6 @@ class DynamicNetwork(object):
                 #print("Sending_queue:", self._network.nodes[startNode]['sending_queue'])
                 #print("Recieve:", self._network.nodes[startNode]['receiving_queue'])
                 notfull.remove(startNode)
-                """ BANAID FIX BC NODES ARE BECOMING FULL :( """
                 try:
                     startNode = random.choice(notfull)
                 except:

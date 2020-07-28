@@ -189,7 +189,6 @@ def main(
         max_edge_removal, network_type, router_type, weight_type, edge_change_type, print_edge_weights, plot_opt, dynetworkSimulator):
 
     # call start simulation
-
     dynetworkSimulator._avg_deliv = dynetworkSimulator.start(time_steps, min_edge_removal,
                              max_edge_removal, init_num_packets, router_type, weight_type, plot_opt, edge_change_type, print_edge_weights)
                              

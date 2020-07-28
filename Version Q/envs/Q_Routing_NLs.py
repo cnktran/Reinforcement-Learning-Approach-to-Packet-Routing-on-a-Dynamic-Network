@@ -8,21 +8,23 @@ This program does complete Q-learning process
 
 numEpisode = 50  # aka number of rounds of routing
 time_steps = 2000  # number of steps give the network to sent packet
-learning_plot = True
-comparison_plots = True
+learning_plot = True # mark True if want to generate graphs for stat measures while learning
+comparison_plots = True # mark True if want to generate graphs for stat measures for testing among various network loads
 plot_opt = False
 
-network_load = np.arange(1000, 5500, 800)
+network_load = np.arange(500, 5500, 500)
+for i in network_load:
+    if i <= 0:
+        print("Error: Network load must be positive.")
+        sys.exit
 trials = 5
 
 # establish enviroment
 env = dynetworkEnv()
-env.resetForTest(max(network_load))
+env.reset(max(network_load))
 agent = QAgent(env.dynetwork)
 
 '''stats measures'''
-
-
 avg_deliv_learning = []
 maxNumPkts_learning = []
 avg_q_len_learning = []
@@ -32,11 +34,9 @@ avg_perc_empty_nodes_learning=[]
 
 # learn numEpisode times
 for i_episode in range(numEpisode):
-
     print("---------- Episode:", i_episode+1," ----------")
     step = []
     deliveries = []
-
     # iterate each time step try to finish routing within time_steps
     for t in range(time_steps):
         #print("at time step:", t)
@@ -46,7 +46,6 @@ for i_episode in range(numEpisode):
         env.updateWhole(agent)
 
         # Draw the current slice
-        # node_queues = nx.get_node_attributes(self._dynetwork._network, 'sending_queue')
         if plot_opt:
             env.render()
 
@@ -62,27 +61,20 @@ for i_episode in range(numEpisode):
         #    f.write(str(agent.q))
         #   f.close()
 
-
         if (env.dynetwork._deliveries >= (env.npackets + env.dynetwork._max_initializations)):
             print("done!")
             break
-
     
     # stats measure after routing all packets
     avg_deliv_learning.append(env.calc_avg_delivery())
     maxNumPkts_learning.append(env.dynetwork._max_queue_length)
     avg_q_len_learning.append(np.average(env.dynetwork._avg_q_len_arr))
     avg_perc_at_capacity_learning.append(
-       np.sum(env.dynetwork._num_capacity_node) /env.dynetwork.num_nodes/t * 100)
-    #avg_perc_at_capacity_learning.append(
-    #    np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
-    avg_perc_empty_nodes_learning.append((np.sum(env.dynetwork._num_capacity_node)/env.dynetwork.num_nodes/t) *100)
+       np.sum(((env.dynetwork._num_capacity_node) /env.dynetwork.num_nodes)/t) * 100)
+    avg_perc_empty_nodes_learning.append(((np.sum(env.dynetwork._num_capacity_node)/env.dynetwork.num_nodes)/t) *100)
     rejectionNums_learning.append(env.dynetwork._rejections/env.dynetwork._deliveries)
     
-    env.resetForTest(max(network_load))
-    
-
-
+    env.reset(max(network_load))
 
 '''stats measures'''
 #After learning, testing begin
@@ -98,7 +90,7 @@ for i in range(len(network_load)):
     print("---------- Testing:", curLoad," ----------")
     
     for currTrial in range(trials):
-        env.resetForTest(curLoad)
+        env.reset(curLoad)
         step = []
         deliveries = []
     
@@ -108,7 +100,7 @@ for i in range(len(network_load)):
             #print("Deliveries:", env.dynetwork._deliveries)
     
             # key function that obtain action and update Q-table
-            env.updateWhole(agent, learn=False)
+            env.updateWhole(agent, learn = False)
     
             # Draw the current slice
             # node_queues = nx.get_node_attributes(self._dynetwork._network, 'sending_queue')

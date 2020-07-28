@@ -1,18 +1,16 @@
 from our_env import *
 import matplotlib.pyplot as plt
 '''
-This program does complete Q-learning process
+This program manages the overall Q-learning process
 '''
-
 numEpisode = 60  # aka number of rounds of routing
 time_steps = 2000  # number of steps give the network to sent packet
-learning_plot = True
-plot_opt = False
+learning_plot = True # mark True if want to generate graphs for stat measures while learning
+plot_opt = False # mark True if want to generate pictures of our network at each time step for all episodes in our simulation
 
 # establish enviroment
 env = dynetworkEnv()
 agent = QAgent(env.dynetwork)
-
 '''stats measures'''
 avg_deliv = []
 maxNumPkts = []
@@ -23,31 +21,25 @@ avg_perc_empty_nodes =[]
 # learn numEpisode times
 for i_episode in range(numEpisode):
     print("---------- Episode:", i_episode+1," ----------")
-
     step = []
     deliveries = []
 
-    # iterate each time step try to finish routing within time_steps
+    """ iterate each time step try to finish routing within time_steps """
     for t in range(time_steps):
-        #print("at time step:", t)
-        #print("Deliveries:", env.dynetwork._deliveries)
-
         # key function that obtain action and update Q-table
         env.updateWhole(agent)
-
+        
         # Draw the current slice
-        # node_queues = nx.get_node_attributes(self._dynetwork._network, 'sending_queue')
         if plot_opt:
             env.render()
-
-        # store arributes for stats measure
-        #if i_episode == (numEpisode - 1):
-        #    f = open("q-learning/dict.txt", "w")
-        #    f.write(str(agent.q))
-        #   f.close()
-
+            
+        # stores the final Q-table after all episodes have complete 
         if (env.dynetwork._deliveries >= (env.npackets + env.dynetwork._max_initializations)):
             print("done!")
+            if i_episode == (numEpisode - 1):
+                f = open("q-learning/dict.txt", "w")
+                f.write(str(agent.q))
+                f.close()
             break
 
     # stats measure after routing all packets
@@ -55,19 +47,11 @@ for i_episode in range(numEpisode):
     maxNumPkts.append(env.dynetwork._max_queue_length)
     avg_q_len.append(np.average(env.dynetwork._avg_q_len_arr))
 
-    #avg_perc_at_capacity.append(
-        #np.sum(env.dynetwork._num_capacity_node) / env.dynetwork.num_nodes/t * 100)
-
     avg_perc_at_capacity.append(
-        np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node) * 100)
-
-    
-
+        (np.sum(env.dynetwork._num_capacity_node) / np.sum(env.dynetwork._num_working_node)) * 100)
     avg_perc_empty_nodes.append(
-        np.average(env.dynetwork._num_empty_node) / env.dynetwork.num_nodes *100)
-
+        (np.sum(env.dynetwork._num_empty_node) / env.dynetwork.num_nodes) *100)
     rejectionNums.append(env.dynetwork._rejections/env.dynetwork._deliveries)
-
     env.reset()
 
 script_dir = os.path.dirname(__file__)
