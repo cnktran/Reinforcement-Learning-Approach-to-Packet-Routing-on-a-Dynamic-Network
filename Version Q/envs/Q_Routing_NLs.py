@@ -70,7 +70,7 @@ for i_episode in range(numEpisode):
     maxNumPkts_learning.append(env.dynetwork._max_queue_length)
     avg_q_len_learning.append(np.average(env.dynetwork._avg_q_len_arr))
     avg_perc_at_capacity_learning.append(((
-       np.sum(env.dynetwork._num_capacity_node) /env.dynetwork._num_working_node)/t) * 100)
+       np.sum(env.dynetwork._num_capacity_node)/np.sum(env.dynetwork._num_working_node))/t) * 100)
     avg_perc_empty_nodes_learning.append(((np.sum(env.dynetwork._num_empty_node))/env.dynetwork.num_nodes)/t) *100)
     rejectionNums_learning.append(env.dynetwork._rejections/env.dynetwork._deliveries)
     
