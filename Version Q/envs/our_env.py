@@ -11,6 +11,10 @@ from our_agent import QAgent
 import Packet
 import random
 import UpdateEdges as UE
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 
 """ This class contains our gym environment which contains all of the necessary components for agents to take actions and receive rewards. file contains functions: 
     
@@ -92,7 +96,8 @@ class dynetworkEnv(gym.Env):
         self.dynetwork = copy.deepcopy(self.initial_dynetwork)
         # use dynetwork class method randomGeneratePackets to populate the network with packets
         self.dynetwork.randomGeneratePackets(copy.deepcopy(self.npackets))
-
+        self._positions = nx.spring_layout(self.dynetwork._network)
+        self.print_edge_weights = True
         # make a copy so that we can preserve the initial state of the network
         # set our current packet that we are focusing on to the first item in the dynetwork's packet list
     def router(self, agent, will_learn = True):
@@ -235,9 +240,9 @@ class dynetworkEnv(gym.Env):
         dest_node = pkt.get_endPos()
         weight = self.dynetwork._network[curr_node][next_step]['edge_delay']
         pkt.set_curPos(next_step)
+        self.dynetwork._packets.packetList[self.packet].set_time(pkt.get_time() + weight)
         if pkt.get_curPos() == dest_node:
             """ if packet has reached destination, a new packet is created with the same 'ID' (packet index) but a new destination, which is then redistributed to another node """
-            self.dynetwork._packets.packetList[self.packet].set_time(pkt.get_time() + weight)
             self.dynetwork._delivery_times.append(self.dynetwork._packets.packetList[self.packet].get_time())
             self.dynetwork._deliveries += 1
             self.dynetwork.GeneratePacket(self.packet, random.randint(0, 5))
@@ -298,7 +303,7 @@ class dynetworkEnv(gym.Env):
         if not os.path.isdir(results_dir):
             os.makedirs(results_dir)
         plt.axis('off')
-        plt.figtext(0.1, 0.1, "total injections: "+ str(init_num_packets + self._dynetwork._initializations))
+        plt.figtext(0.1, 0.1, "total injections: "+ str(self.max_initializations + self.dynetwork._initializations))
         plt.savefig("network_images/dynet" + str(i) + ".png")
         plt.clf()
         

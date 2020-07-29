@@ -152,9 +152,9 @@ class Router:
     def send_packet(self, dyNetwork, pkt, curr, next_step):
         dyNetwork._packets.packetList[pkt].set_curPos(next_step)
         weight = dyNetwork._network[curr][next_step]['edge_delay']
+        curr_time = dyNetwork._packets.packetList[pkt].get_time()
+        dyNetwork._packets.packetList[pkt].set_time(curr_time + weight)
         if dyNetwork._packets.packetList[pkt].get_curPos() == dyNetwork._packets.packetList[pkt].get_endPos():
-            curr_time = dyNetwork._packets.packetList[pkt].get_time()
-            dyNetwork._packets.packetList[pkt].set_time(curr_time + weight)
             new_time = dyNetwork._packets.packetList[pkt].get_time()
             dyNetwork._delivery_times.append(new_time)
             dyNetwork._deliveries += 1

@@ -18,7 +18,6 @@ Contains routing using shortest path via both Dijkstra and Floyd-Warshall.
 - dynetwork.py
 - router.py
 - Packet.py
-- Simulator.py
 - Stat_Simulator.py
 - Statistics.py
 - UpdateEdges.py
@@ -32,8 +31,6 @@ Contains routing using shortest path via both Dijkstra and Floyd-Warshall.
     - Defines packet object.
 - router.py
     - Determines next step taken by each packet on the network. Calls Dijkstra/Floyd-Warshall.
-- Simulator.py
-    - Contains main function and performs simulation over given number of time steps. Outputs average delivery time.
 - Stat_Simulator.py
     - Version of Simulator.py to be used with Statistics.py.
 - Statistics.py
@@ -79,11 +76,8 @@ Contains routing using Q-Learning.
 ### Usage:
 - To perform Q-learning and observe learning results. Open Q_Routing.py and specify 'numEpisode' being number of times you wish the program to learn
 Then specify 'time_steps' being the maximum time steps for router to finish routing all packets.
-
 - To change the network setup, open our_env.py to specify setup at the top of the file.
-
 - To adjust learning rates, open our_agent.py to specify setup at the top of the file.
-
 - To perform Q-learning and observe learning results and observe performance on different network loads. Open Q_Routing_NLs.py (Network Loads). Specify 'numEpisode' being number of times you wish the program to learn. Then specify 'time_steps' being the maximum time stamps for router to finish route all packets. Then specify network load list (e.g. np.arange(500, 5500, 500)) to perform simulation.
 
 ---

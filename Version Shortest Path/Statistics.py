@@ -29,7 +29,7 @@ plot_opt = False
 max_new_packets = 700 # maximum additional packets injection after initialization certain number of packets
 
 # Different packet number 
-network_load = np.arange(50, 550, 50)
+network_load = np.arange(500, 7500, 500)
 #network_load = [2000]
 
 '''statistics option'''
@@ -94,8 +94,6 @@ for i in range(len(network_load)):
         avg_perc_at_capacity.append(dynetworkSimulator._avg_perc_at_capacity)
         rejectionNums.append(dynetworkSimulator._rejection_numbers/dynetworkSimulator._dynetwork._deliveries)
         avg_perc_empty_nodes.append(dynetworkSimulator._avg_perc_empty)
-
-
         dynetworkSimulator.clear_queues()
 
     print("Simulation "+str(i+1)+" done.")
@@ -114,8 +112,8 @@ if(calculate_delivery_time):
     plt.clf()
     plt.title("Average Delivery Time vs Network Load")
     plt.scatter(np.repeat(network_load, trials), avg_deliv)
-    plt.xlabel('Initial Number of Packets')
-    plt.ylabel('Avg Delivery Time')
+    plt.xlabel('Number of Packets')
+    plt.ylabel('Avg Delivery Time (in steps)')
     plt.savefig(results_dir + "avg_deliv.png")
     plt.clf()
 
@@ -129,7 +127,7 @@ if(calculate_congestion_max_q_len):
     plt.clf()
     plt.title("Maximum Num of Pkts a Node Hold vs Network Load")
     plt.scatter(np.repeat(network_load, trials), maxNumPkts)
-    plt.xlabel('Initial Number of Packets')
+    plt.xlabel('Number of Packets')
     plt.ylabel('Maximum Number of Packets being hold by a Node')
     plt.savefig(results_dir + "maxNumPkts.png")
     plt.clf()
@@ -144,7 +142,7 @@ if(calculate_congestion_avg_q_len):
     plt.clf()
     plt.title("Average Num of Pkts a Node Hold vs Network Load")
     plt.scatter(np.repeat(network_load, trials), avg_q_len)
-    plt.xlabel('Initial Number of Packets')
+    plt.xlabel('Number of Packets')
     plt.ylabel('Average Number of Packets being hold by a Node')
     plt.savefig(results_dir + "avg_q_len.png")
     plt.clf()
@@ -158,10 +156,10 @@ if(calculate_congestion_perc_at_capacity):
     print(network_load)
     print(np.around(np.array(avg_perc_at_capacity),3))
     plt.clf()
-    plt.title("Percent of Nodes at Capacity vs Network Load")
+    plt.title("Percent of Working Nodes at Capacity vs Network Load")
     plt.scatter(np.repeat(network_load, trials), avg_perc_at_capacity)
-    plt.xlabel('Initial Number of Packets')
-    plt.ylabel('Percent of Nodes at Capacity (in percentage)')
+    plt.xlabel('Number of Packets')
+    plt.ylabel('Percent of Working Nodes at Capacity (in percentage)')
     plt.savefig(results_dir + "avg_perc_at_capacity.png")
     plt.clf()
 
@@ -169,14 +167,14 @@ if(calculate_congestion_perc_at_capacity):
 Average Average Rejection Numbers at each time stamp 
 '''
 if(calculate_congestion_rejection):
-    print("Average Rejection Numbers")
+    print("Average Idle Time Numbers")
     print(network_load)
     print(np.around(np.array(rejectionNums),3))
     plt.clf()
-    plt.title("Average Rejection Numbers vs Network Load")
+    plt.title("Average Packet Idle Time vs Network Load")
     plt.scatter(np.repeat(network_load, trials), rejectionNums)
-    plt.xlabel('Initial Number of Packets')
-    plt.ylabel('Number of packet rejections')
+    plt.xlabel('Number of Packets')
+    plt.ylabel('Packet Idle Time (in steps)')
     plt.savefig(results_dir + "rejectionNums.png")
     plt.clf()
 
@@ -190,7 +188,7 @@ if(calculate_perc_empty):
     plt.clf()
     plt.title("Percent of Empty Nodes Per Episode")
     plt.scatter(np.repeat(network_load, trials), avg_perc_empty_nodes)
-    plt.xlabel('Initial Number of Packets')
+    plt.xlabel('Number of Packets')
     plt.ylabel('Percent of Empty Nodes  (in percentage)')
     plt.savefig(results_dir + "avg_perc_empty.png")
     plt.clf()

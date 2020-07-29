@@ -2,6 +2,8 @@ import networkx as nx
 import os
 from dynetwork import *
 from router import Router
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math
 import UpdateEdges as UE
@@ -157,7 +159,7 @@ class Simulator(object):
             deliveries.append(self._dynetwork._deliveries)
 
             # If all packages have been delivered before we reach the number of time steps, terminate the simulation
-            if self._dynetwork._deliveries >= init_num_packets:
+            if self._dynetwork._deliveries >= (init_num_packets + self._dynetwork._initializations):
                 break_time = i
                 print('Package delivery finished in %i steps.' % break_time)
                 break

@@ -31,7 +31,7 @@ for i_episode in range(numEpisode):
         
         # Draw the current slice
         if plot_opt:
-            env.render()
+            env.render(t)
             
         # stores the final Q-table after all episodes have complete 
         if (env.dynetwork._deliveries >= (env.npackets + env.dynetwork._max_initializations)):
