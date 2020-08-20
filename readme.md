@@ -1,59 +1,31 @@
 # Dynamic Routing
 
 ## Project Description:
-To test various packet routing algorithms on a dynamic network, we create a simulation dynamic network simulation that calls upon a router to determines paths for each packet according to one routing algorithm. For this project in particular, we explore shortest path via Dijkstra's algorithm, shortest path via Floyd-Warshall's algorithm, Q-learning, and Deep Q Learning. 
+In order to test the performance of various routing algorithms on a dynamic network, we create a packet routing simulation on a network that updates discretely over a series of time steps.
 
-In one episode of the simulation, edges are randomly chosen to disappear and be restored at every time step. Furthermore, edge weights fluctuate mimicking a sinusoid. At the beginning of the episode, a number of packets (the network load) is generated on the network with a random start and destination node. Throughout the episode, every time a packet is delivered, a new one is initalized a number of time steps later. When a set number of packets have been generated and delivered, the episode ends and packet delivery time as well as network congestion is measured.
+Throughout one episode of the simulation, edges are randomly chosen to disappear and be restored at each time step. In addition, edge weights fluctuate in a sinusoidal manner throughout the episode. At the beginning of each episode, a number of packets (the network load) is generated on the network, each with a random start and destination node. Every time a packet is delivered, a new one is initialized some number of time steps later. Once a set number of packets have been generated and delivered on the network, the episode ends. Average packet delivery time and various measures of network congestion are then calculated.
+
+The simulation calls upon a router to determine paths for each packet according to one routing algorithm. For this project in particular, we explore shortest path via Dijkstra's algorithm, shortest path via Floyd-Warshall's algorithm, Q-learning via various reward functions, and Deep Q Learning. 
+
 
 ## Requirements:
 - NetworkX
 - FFmpeg (for animating)
 - Matplotlib
-
-## Version Shortest Path
-Contains routing using shortest path via both Dijkstra and Floyd-Warshall.
-
-### Files:
-- Animator.py
-- dynetwork.py
-- router.py
-- Packet.py
-- Stat_Simulator.py
-- Statistics.py
-- UpdateEdges.py
-
-### File Descriptions:
-- Animator.py
-    - Takes images in directory network_images and creates animation.mp4. Edit here for animation details (fps, size, etc.)
-- dynetwork.py
-    - Defines network object which contains information on the packets, deliveries, and rejections.
-- Packet.py
-    - Defines packet object.
-- router.py
-    - Determines next step taken by each packet on the network. Calls Dijkstra/Floyd-Warshall.
-- Stat_Simulator.py
-    - Version of Simulator.py to be used with Statistics.py.
-- Statistics.py
-    - Runs simulation multiple times to view effects of changing network load on delivery time and congestion.
-- UpdateEdges.py
-    - Contains functions for dynamic edge change.
-
-### Usage:
-- To perform individual simulations, open Simulator.py and edit parameters at the bottom of the file before running.
-- To perform a meta-simulation across multiple network loads, open Statistics.py and edit parameters at the top of the file before running. Make sure to set plot_opt = False. You can determine which network loads you want to test by changing the values in the list network_load = [1000, 3000, 5000, 7000, 9000]. You can plot results in terms of average delivery time, average queue size, and maximum queue size.
+- OpenAI Gym
+- PyTorch
 
 ---
-
-## Version Q-Learning
-Contains routing using Q-Learning.
+## Shortest Path & Q-Learning
+Contains routing using Q-Learning, implemented in a Gym environment. Contains the option to also run Shortest Path (either Dijkstra or Floyd-Warshall) on the same network for comparison purposes.
 
 ### Files
 - dynetwork.py
 - our_agent.py
 - our_env.py
 - Packet.py
-- Q_Routing.py
-- Q_Routing_NLs.py
+- QLSimulationWithSP.py
+- rewardsComparison.py
 - UpdateEdges.py
 
 ### File Descriptions:
@@ -65,50 +37,102 @@ Contains routing using Q-Learning.
     - Creates Q-learning environment and contains all functions for performing the simulation. Also contains all parameters relevant to network and the reward function.
 - Packet.py
 	- Defines packet object.
-- Q_Routing.py
-    - Simulates Q-learning based on our_env.py and produces statistics for learning process.
-- Q_Routing_NLs.py
-    - Simulates Q-learning based on our_env.py and produce statistics for routing based on a fixed Q-table after a set number of learning episodes. Used for comparison of performance to shortest path.
+- QLSimulationWithSP.py
+    -Teaches an agent based on the max in a list of network loads for a fixed number of episodes. Then routes solely based on the Q-table and outputs measures of delivery time and congestion. Contains options for comparing to Shortest Path.
+- rewardsComparison.py
+    - Serves the same function as QLSimulationWithSP.py, but used to compare Q-learning for various reward functions instead of one Q-learning algorithm and Shortest Path. 
 - UpdateEdges.py
     - Contains functions for dynamic edge change.
----
 
-### Usage:
-- To perform Q-learning and observe learning results. Open Q_Routing.py and specify 'numEpisode' being number of times you wish the program to learn
-Then specify 'time_steps' being the maximum time steps for router to finish routing all packets.
-- To change the network setup, open our_env.py to specify setup at the top of the file.
-- To adjust learning rates, open our_agent.py to specify setup at the top of the file.
-- To perform Q-learning and observe learning results and observe performance on different network loads. Open Q_Routing_NLs.py (Network Loads). Specify 'numEpisode' being number of times you wish the program to learn. Then specify 'time_steps' being the maximum time stamps for router to finish route all packets. Then specify network load list (e.g. np.arange(500, 5500, 500)) to perform simulation.
+### Usage
+- Open our_env.py and change network properties at the top. The default is a 50-node network of average degree 3, queue size 150, max transmit 10, with 5000 packets to start and 5000 additional packets to delivery before the episode terminates.
+- Open QLSimulationWithSP.py and specify 'numEpisode' for how many episodes the agent should learn. Specify an array of network loads that you would like to test, and whether the program should also run shortest path.
+- To adjust learning rates, open our_agent.py to specify setup at the top of the file. The default is
+- Run QLSimulationWithSP.py in python3.
 
 ---
+## Deep Q-Learning
+Contains routing using Deep Q-Learning, using PyTorch package.
+
+### Files
+- DeepQSimulation.py
+- dynetwork.py
+- our_agent.py
+- our_env.py
+- Packet.py
+- UpdateEdges.py
+- DQN.py
+- neural_network.py
+- replay_memory.py
+- Setting.json
+
+### Additional File Descriptions
+- DQN.py
+    - Specifies hidden layer and activation functions
+- neural_network.py
+    - Create instance of neural networks which contains DQN instances, specify memory size, policy and target networks, and optimizer.
+- replay_memory.py
+    - contain methods for creating reply_memory instance, pushing and pulling experiences.
+- Setting.json
+    - contain all the settings for network, parameters for deep Q-learning, agent and setup for simulation.
+- DeepQSimulation.py
+    -Teaches an agent based on the max in a list of network loads for a fixed number of episodes. Then routes using deep Q-learning algorithms. Outputs measures of delivery time and congestion. Contains options for comparing to Shortest Path.
+
+### Usage
+- Open Setting.json and specify desired settings
+- Open DeepQSimulation.py and run the program in python 3
+
 ## Parameter Discussion
 
 ### General Parameters (in Shortest Path/in Q-Learning)
-- node_count/nnodes : Number of nodes on the network.
-- edge_count/nedges : Number of edges on the network. For barabasi-albert (see network_type), specify **edges per node**. For erdos-renyi, specify **total number of edges desired**.
-- max_transmit : Number of packets a node can send per time step.
+#### In our_env.py
+- nnodes : Number of nodes on the network.
+- nedges : Number of edges on the network. For barabasi-albert (see network_type), specify **edges per node**. For erdos-renyi, specify **total number of edges desired**.
 - max_queue : Number of packets a node can hold at any given time step.
-- time_steps : Maximum length of simulation.
+- max_transmit : Number of packets a node can send per time step.
+- npackets : The number of packets to generate on the network at the start of the episode.
+- max_initializations : Number of packets to generate and deliver on the network before the episode is complete.
 - max_edge_weight : When initializing edge weights, a weight is randomly selected from [0, max_edge_weight].
-- edge_removal_min : The minimum number of edges that is removed from the network per time step.
-- edge_removal_max : The maximum number of edges that is removed from the network per time step.
+- min_edge_removal : The minimum number of edges that is removed from the network per time step.
+- max_edge_removal : The maximum number of edges that is removed from the network per time step.
 - edge_change_type : Off, sinusoidal, or random walk.
 - network_type : Currently we can generate two types of random networks. One uses the Barabasi-Albert construction, which creates a center node and adds nodes branch outwards. This produces a well-connected graph with a "center" of high degree. This is representative of Internet networks, and is prone to high congestion at its center. The other network uses the Erdos-Renyi construction, which is random with a relatively consistent degree across all nodes. This is less representative of Internet networks and can generate "isolates" which are unconnected to the rest of the network.
-- init_num_packets/npackets : For individual episodes (Simulator.py/Q_Routing.py), the number of packets to generate on the network.
-- max_new_packets : Number of packets to generate and deliver on the network before the episode is complete.
-- network_load : Vary starting number of packets on the network. Given as a list of network loads for testing.
-- trials : Number of times to test per item in network_load.
+- router_type : Algorithm used to determine packet path when routing using shortest path. Current options are Shortest Path via Dijkstra's Algorithm or Shortest Path via Floyd-Warshall Algorithm.
 
-### Shortest Path-Specific Parameters
-- router_type : Routing algorithm used to determine packet path. Current options are Shortest Path via Dijkstra's Algorithm or Shortest Path via Floyd-Warshall Algorithm.
-- plot_opt : Produce graphs and an animation of the simulation. Works well for individual simulations of time_steps less than or equal to 100. Otherwise leave False or run at your own risk.
-- weight_type : Leave on 'delay' for packets to wait the weight of an edge before its next step. Otherwise, 'none' means packets will add the edge weight to their lifespan but not pause between traversal.
-- calculate_delivery_time : Print data and produce plot for average number of time steps for delivery across the given network loads.
-- calculate_congestion_max_q_len : Print data and produce plot for the max queue size of the most congested node in the simulation across the given network loads.
-- calculate_congestion_avg_q_len : Print data and produce plot for the average queue size of the nodes during the simulation across the given network loads.
-- calculate_congestion_perc_at_capacity : Print data and produce plots for the percentage of nodes that operate at full holding capacity across the given network loads.
-
-### Q-Learning-Specific Parameters
+#### In DeepQSimulation.py
 - numEpisode : Number of episodes spent learning. For a decay rate of 0.999, around 60 episodes is sufficient.
-- learning_plot : Boolean. If True, saves plots for tests done for each network load.
-- comparison_plots : Boolean. If True, saves plots for delivery/congestion performance during learning process.
+- time_steps : Maximum length of simulation.
+- rewardfunction : string that specifies which reward function to use (defined in our_env.py)
+- learning_plot : Boolean. If True, saves plots for delivery/congestion performance during learning process.
+- comparison_plots : Boolean. If True, saves plots for tests done for each network load.
+- trials : Number of times to test per item in network_load.
+- show_example_comparison : Boolean. Saves animation of a sample packet path at each network load when testing. Discouraged for large networks.
+- sp : Boolean. Toggle Shortest Path routing on or off when testing.
+- network_load : Vary starting number of packets on the network. Given as a list of network loads for testing.
+
+### DQN Parameters
+- DQN
+	- take_queue_size_as_input : Boolean, if true, neural network will take queue_size of the node as additional input for neural network
+	- memory_bank_size : number of experiences being kept in memory reply
+	- memory_batch_size : number of experiences being pulled from memory reply
+	- optimizer_learning_rate: step size used to minimize loss function
+	- optimizer_per_episode : Boolean, if true, will call optimizer every time step, if false, will call optimizer after route one packet
+- AGENT
+	- epsilon : probability of doing explore (random walk) ie. not exploit (use Q-value)
+	- decay_epsilon_rate : factor to discount epsilon 
+	- gamma_for_next_q_val : discount factor for Q-values
+	- use_random_sample_memory: one of three ways of pulling experiences from memory reply (random sample)
+	- use_most_recent_sample_memory: one of three ways of pulling experiences from memory reply (most recent sample)
+	- use_priority_memory: one of three ways of pulling experiences from memory reply (prioritized sample)\
+-SIMULATION 
+	- training_episodes : number of episodes for training the neural network,
+	- max_allowed_time_step_per_episode : max time steps allowed for each per episode,
+	- num_time_step_to_update_target_network : how often do we update target network,
+	- test_network_load_min : minimum network load to test,
+	- test_network_load_max : maximum network load to test,
+	- test_network_load_step_size : step size between minimum network load to maximum network load,
+	- test_trials_per_load : number of trials for one network load,
+	- learning_plot : Boolean, if true print performance measure plots for learning plots,
+	- test_diff_network_load_plot : Boolean, if true print performance measure plots for tests,
+	- plot_routing_network : Boolean, if true, save screen shots of network during the routing
+

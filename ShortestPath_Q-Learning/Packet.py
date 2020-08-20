@@ -1,3 +1,5 @@
+'''Class representing packet which stores the starting position, current position,
+destination node, and time steps sent alive'''
 class Packet(object):
     def __init__(self, startPos, endPos, curPos, index, weight, time = 0):
         self._startPos = startPos
@@ -6,6 +8,7 @@ class Packet(object):
         self._index = index
         self._weight = weight
         self._time = time
+        self._steps = [startPos]
     def get_startPos(self):
         #print("getter method called")
         return self._startPos
@@ -53,7 +56,11 @@ class Packet(object):
     def set_time(self, time):
         #print("getter method called")
         self._time = time 
+        
+    def add_step(self, step):
+        (self._steps).append(step)
 
+'''Class which stores all the packets in the network'''
 class Packets(object):
     def __init__(self, packetList):
         self.packetList = packetList

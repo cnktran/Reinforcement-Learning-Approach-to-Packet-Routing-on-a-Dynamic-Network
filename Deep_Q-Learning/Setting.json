@@ -1,0 +1,42 @@
+{
+	"NETWORK": {
+		"number nodes": 500,
+		"edge degree": 3,
+		"holding capacity": 75,
+		"sending capacity": 20,
+		"initial num packets": 25000,
+		"max_additional_packets": 5000,
+		"max_edge_weight": 10,
+		"min_edge_removal": 0,
+		"max_edge_removal": 10,
+		"edge_change_type": "sinusoidal",
+		"network_type": "barabasi-albert"
+	},
+	"DQN": {
+		"take_queue_size_as_input": 1,
+		"memory_batch_size": 16,
+		"memory_bank_size": 1000,
+		"optimizer_learning_rate": 0.005,
+		"optimize_per_episode": 1
+	},
+	"AGENT": {
+		"epsilon": 0.7,
+		"decay_epsilon_rate": 0.99998,
+		"gamma_for_next_q_val": 0.6,
+		"use_random_sample_memory": 1,
+		"use_most_recent_memory": 0,
+		"use_priority_memory": 0
+	},
+	"Simulation": {
+		"training_episodes": 100,
+		"max_allowed_time_step_per_episode": 2000,
+		"num_time_step_to_update_target_network": 10,
+		"test_network_load_min": 5000,
+		"test_network_load_max": 25000,
+		"test_network_load_step_size": 5000,
+		"test_trials_per_load": 5,
+		"learning_plot": 1,
+		"test_diff_network_load_plot": 1,
+		"plot_routing_network": 0
+	}
+}

@@ -34,7 +34,7 @@ def Random_Walk(dyNetwork):
 ''' Change edge weights so that the edge weight changes will be roughly sinusoidal across the simulation '''
 def Sinusoidal(dyNetwork):
     for s_edge, e_edge in dyNetwork._network.edges():
-        dyNetwork._network[s_edge][e_edge]['edge_delay'] = max(1, int(dyNetwork._network[s_edge][e_edge]['edge_delay']* (1 + 0.5 * math.sin(dyNetwork._network[s_edge][e_edge]['sine_state']))))
+        dyNetwork._network[s_edge][e_edge]['edge_delay'] = max(1, int(dyNetwork._network[s_edge][e_edge]['initial_weight']* (1 + 0.5 * math.sin(dyNetwork._network[s_edge][e_edge]['sine_state']))))
         dyNetwork._network[s_edge][e_edge]['sine_state'] += math.pi/6
 
 ''' Not in use. If it were used the edge weight would be the average of the number of packets in each queue of the endpoints of the edge. '''
